@@ -8,6 +8,30 @@ import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-
 // 1. Global Variables Setup
 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
 const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyAUL74mqVCIY1MMclrRhdVbY_VyP4lgQpY",
+    authDomain: "waiappstore.firebaseapp.com",
+    projectId: "waiappstore",
+    storageBucket: "waiappstore.firebasestorage.app",
+    messagingSenderId: "161610339691",
+    appId: "1:161610339691:web:5f8e9fcd9706fda330682e",
+    measurementId: "G-T3NWL0LXTT"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+
 
 // --- ADMIN CONSTANTS (Encoded to hide from casual viewing) ---
 window.isAdmin = false;
