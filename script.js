@@ -1,23 +1,17 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp, doc, getDoc, setDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+// Note: SDK version is updated to 12.5.0 and configuration is hardcoded as requested.
+
+// 1. Firebase SDK Imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+import { getFirestore, collection, onSnapshot, addDoc, serverTimestamp, doc, getDoc, setDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
+import { setLogLevel } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js";
 
 // setLogLevel('Debug'); // Debugging အတွက်
 
-// 1. Global Variables Setup
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
+// 2. Global Variables Setup & Firebase Configuration
+// ----------------------------------------------------------------------
+// Your Firebase Config (Hardcoded as requested)
+const firebaseConfig = {
     apiKey: "AIzaSyAUL74mqVCIY1MMclrRhdVbY_VyP4lgQpY",
     authDomain: "waiappstore.firebaseapp.com",
     projectId: "waiappstore",
@@ -25,13 +19,11 @@ const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __f
     messagingSenderId: "161610339691",
     appId: "1:161610339691:web:5f8e9fcd9706fda330682e",
     measurementId: "G-T3NWL0LXTT"
-  };
+};
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
-
+// Extracted App ID and Project ID for use in paths
+const appId = firebaseConfig.appId;
+// ----------------------------------------------------------------------
 
 // --- ADMIN CONSTANTS (Encoded to hide from casual viewing) ---
 window.isAdmin = false;
@@ -47,7 +39,7 @@ const ADMIN_PASSWORD = atob(ENCODED_PASSWORD);
 let currentEditAppId = null; // App ID for the app currently being edited
 // -----------------------
 
-// 2. Firebase Initialization
+// 3. Firebase Initialization
 const app = initializeApp(firebaseConfig);
 window.db = getFirestore(app);
 window.auth = getAuth(app);
@@ -76,24 +68,14 @@ const editAppForm = document.getElementById('editAppForm'); // New Edit Form
 
 // --- FIREBASE FUNCTIONS ---
  
-// 3. Authentication Setup (Sign In)
+// 4. Authentication Setup (Sign In)
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         userId = user.uid;
     } else {
-        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-            try {
-                await signInWithCustomToken(auth, __initial_auth_token);
-                userId = auth.currentUser.uid;
-            } catch (error) {
-                console.error("Custom token sign-in failed:", error);
-                await signInAnonymously(auth);
-                userId = auth.currentUser.uid;
-            }
-        } else {
-            await signInAnonymously(auth);
-            userId = auth.currentUser.uid;
-        }
+        // No custom token provided in this environment, sign in anonymously
+        await signInAnonymously(auth);
+        userId = auth.currentUser.uid;
     }
     
     isAuthReady = true;
@@ -101,7 +83,7 @@ onAuthStateChanged(auth, async (user) => {
     setupRealtimeListener();
 });
 
-// 4. User Profile Management
+// 5. User Profile Management
 const getProfileDocRef = () => doc(db, `artifacts/${appId}/users/${userId}/profile/details`);
 
 async function fetchUserProfile() {
@@ -188,7 +170,7 @@ document.getElementById('profileSaveBtn').addEventListener('click', async () => 
 });
 
 
-// 5. Real-time App Listener
+// 6. Real-time App Listener
 function setupRealtimeListener() {
     if (!isAuthReady) return;
 
@@ -211,7 +193,7 @@ function setupRealtimeListener() {
     });
 }
  
-// 6. App Submission Logic (Remains the same)
+// 7. App Submission Logic
 appSubmissionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -259,7 +241,7 @@ appSubmissionForm.addEventListener('submit', async (e) => {
     }
 });
 
-// 7. View & Category Filtering (Remains the same)
+// 8. View & Category Filtering
 window.setView = function(view) {
     currentView = view;
     window.setCategoryFilter('All', false); 
@@ -318,7 +300,7 @@ window.filterApps = function() {
     renderApps(filteredApps);
 }
  
-// 8. App Rendering Function (Updated to include Admin Controls)
+// 9. App Rendering Function (Updated to include Admin Controls)
 function renderApps(apps) {
     const appListContainer = document.getElementById('appListContainer');
     const noResults = document.getElementById('noResults');
